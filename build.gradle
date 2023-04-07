@@ -1,0 +1,75 @@
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+    id 'java-library'
+}
+
+def gitCommitHash = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+
+group 'dev.JustRed23.redbit'
+version gitCommitHash
+
+print 'RedBit Engine version: ' + version
+
+project.ext.lwjglVersion = "3.3.2"
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.startsWith("arm") || osArch.startsWith("aarch64")
+                ? "natives-linux-${osArch.contains("64") || osArch.startsWith("armv8") ? "arm64" : "arm32"}"
+                : "natives-linux"
+        break
+    case OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+        break
+    case OperatingSystem.WINDOWS:
+        def osArch = System.getProperty("os.arch")
+        project.ext.lwjglNatives = osArch.contains("64")
+                ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+                : "natives-windows-x86"
+        break
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    /* CORE */
+    implementation 'org.jetbrains:annotations:24.0.1'
+    implementation 'com.github.JustRed23:Stonebrick:v1.6.3'
+    /* CORE */
+
+    /* OPENGL */
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-openal"
+    implementation "org.lwjgl:lwjgl-opengl"
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    /* OPENGL */
+
+    /* JSON */
+    implementation 'com.google.code.gson:gson:2.10.1'
+    /* JSON */
+
+    /* LOGGING API */
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    /* LOGGING API */
+
+    /* TESTING */
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    testImplementation 'ch.qos.logback:logback-classic:1.4.6'
+    /* TESTING */
+}
+
+test {
+    useJUnitPlatform()
+}

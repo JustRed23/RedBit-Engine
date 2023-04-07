@@ -32,3 +32,6 @@ gen
 
 # Test directory
 testrun
+
+# Ignore Gradle project-specific cache directory
+.gradle
