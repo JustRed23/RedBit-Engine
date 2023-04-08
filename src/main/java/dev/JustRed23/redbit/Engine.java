@@ -3,6 +3,7 @@ package dev.JustRed23.redbit;
 import dev.JustRed23.redbit.ex.EngineInitializationException;
 import dev.JustRed23.redbit.input.KeyCallback;
 import dev.JustRed23.redbit.input.MouseCallback;
+import dev.JustRed23.redbit.stats.TimingManager;
 import dev.JustRed23.stonebrick.app.Application;
 import dev.JustRed23.stonebrick.data.FileStructure;
 import org.jetbrains.annotations.Contract;
@@ -46,6 +47,7 @@ public class Engine extends Application {
 
     protected void stop() {
         screen.stopRendering();
+        TimingManager.clearTimings();
     }
 
     public static void halt(boolean force) {

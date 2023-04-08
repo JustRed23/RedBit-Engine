@@ -1,15 +1,18 @@
 package dev.JustRed23.redbit;
 
 import dev.JustRed23.redbit.ex.EngineInitializationException;
+import dev.JustRed23.redbit.func.Renderable;
+import dev.JustRed23.redbit.func.Updateable;
 import dev.JustRed23.redbit.input.KeyCallback;
 import dev.JustRed23.redbit.input.MouseCallback;
-import org.lwjgl.glfw.GLFWErrorCallback;
+import dev.JustRed23.redbit.stats.TimingManager;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -31,6 +34,9 @@ public class Screen {
 
     private KeyListener keyListener;
     private MouseListener mouseListener;
+
+    private final List<Updateable> updateables = new ArrayList<>();
+    private final List<Renderable> renderables = new ArrayList<>();
 
     private int updates, renders;
 
@@ -119,14 +125,19 @@ public class Screen {
             updateTime = currentTime;
 
             if (deltaU >= 1) {
+                TimingManager.startTiming("update");
                 update();
+                TimingManager.stopTiming("update");
                 deltaU--;
             }
 
             if (deltaF >= 1) {
+                glEnable(GL_DEPTH_TEST);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
+                TimingManager.startTiming("render");
                 render();
+                TimingManager.stopTiming("render");
 
                 glfwSwapBuffers(windowHandle); // swap the color buffers
 
@@ -149,10 +160,28 @@ public class Screen {
 
     private void update() {
         updates++;
+        for (Updateable updateable : updateables) {
+            TimingManager.startTiming("update " + updateable.getClass().getSimpleName());
+            updateable.update();
+            TimingManager.stopTiming("update " + updateable.getClass().getSimpleName());
+        }
     }
 
     public void render() {
         renders++;
+        for (Renderable renderable : renderables) {
+            TimingManager.startTiming("render " + renderable.getClass().getSimpleName());
+            renderable.render();
+            TimingManager.stopTiming("render " + renderable.getClass().getSimpleName());
+        }
+    }
+
+    public void addUpdateable(Updateable updateable) {
+        updateables.add(updateable);
+    }
+
+    public void addRenderable(Renderable renderable) {
+        renderables.add(renderable);
     }
 
     /**
