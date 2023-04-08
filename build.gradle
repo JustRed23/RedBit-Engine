@@ -39,7 +39,7 @@ repositories {
 dependencies {
     /* CORE */
     implementation 'org.jetbrains:annotations:24.0.1'
-    implementation 'com.github.JustRed23:Stonebrick:v1.6.3'
+    implementation 'com.github.JustRed23:Stonebrick:v1.7'
     /* CORE */
 
     /* OPENGL */
