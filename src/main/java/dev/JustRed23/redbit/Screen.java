@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
