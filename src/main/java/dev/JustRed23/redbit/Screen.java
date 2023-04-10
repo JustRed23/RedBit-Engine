@@ -1,19 +1,23 @@
 package dev.JustRed23.redbit;
 
 import dev.JustRed23.redbit.ex.EngineInitializationException;
+import dev.JustRed23.redbit.ex.SceneInitializationException;
 import dev.JustRed23.redbit.func.Renderable;
 import dev.JustRed23.redbit.func.Updateable;
 import dev.JustRed23.redbit.input.KeyCallback;
 import dev.JustRed23.redbit.input.MouseCallback;
+import dev.JustRed23.redbit.scene.Scene;
 import dev.JustRed23.redbit.stats.TimingManager;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -21,9 +25,9 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Screen {
+public final class Screen {
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(Screen.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Screen.class);
 
     private final int width;
     private final int height;
@@ -35,10 +39,12 @@ public class Screen {
     private KeyListener keyListener;
     private MouseListener mouseListener;
 
-    private final List<Updateable> updateables = new ArrayList<>();
-    private final List<Renderable> renderables = new ArrayList<>();
-
     private int updates, renders;
+
+    private Scene currentScene, lastScene;
+
+    private final List<Updateable> globalUpdateables = new ArrayList<>();
+    private final List<Renderable> globalRenderables = new ArrayList<>();
 
     Screen(int width, int height, String title) {
         this.width = width;
@@ -88,13 +94,11 @@ public class Screen {
         // Make the OpenGL context current
         glfwMakeContextCurrent(windowHandle);
         // Enable v-sync
-        glfwSwapInterval(1);
+        glfwSwapInterval(0);
 
         // Make the window visible
         glfwShowWindow(windowHandle);
         LOGGER.info("Screen initialized (took {}ms)", System.currentTimeMillis() - Engine.START_TIME);
-
-        glfwMakeContextCurrent(NULL);
     }
 
     void startRendering(int fps, int ups) {
@@ -159,29 +163,84 @@ public class Screen {
     }
 
     private void update() {
-        updates++;
-        for (Updateable updateable : updateables) {
-            TimingManager.startTiming("update " + updateable.getClass().getSimpleName());
+        if (currentScene != null)
+            currentScene.onUpdate();
+        for (Updateable updateable : globalUpdateables)
             updateable.update();
-            TimingManager.stopTiming("update " + updateable.getClass().getSimpleName());
-        }
+        updates++;
     }
 
     public void render() {
-        renders++;
-        for (Renderable renderable : renderables) {
-            TimingManager.startTiming("render " + renderable.getClass().getSimpleName());
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        if (currentScene != null)
+            currentScene.onRender();
+        for (Renderable renderable : globalRenderables)
             renderable.render();
-            TimingManager.stopTiming("render " + renderable.getClass().getSimpleName());
+        renders++;
+    }
+
+    /**
+     * Sets the current scene, will cleanup the last scene and initialize the new scene
+     * @param scene the new scene
+     */
+    public void setScene(Scene scene) throws SceneInitializationException {
+        if (currentScene != null)
+            currentScene.onCleanup();
+        lastScene = currentScene;
+
+        currentScene = scene;
+        try {
+            if (currentScene != null)
+                currentScene.onInit();
+        } catch (Exception e) {
+            throw new SceneInitializationException("Could not initialize new scene", e);
         }
     }
 
-    public void addUpdateable(Updateable updateable) {
-        updateables.add(updateable);
+    /**
+     * @return the current active scene
+     */
+    public Scene getCurrentScene() {
+        return currentScene;
     }
 
-    public void addRenderable(Renderable renderable) {
-        renderables.add(renderable);
+    /**
+     * @return the last active scene
+     */
+    public Scene getLastScene() {
+        return lastScene;
+    }
+
+    /**
+     * Add a global updateable, this updateable will be updated every frame no matter what scene is active
+     * @param updateable the updateable to add
+     */
+    public void addGlobalUpdateable(Updateable updateable) {
+        globalUpdateables.add(updateable);
+    }
+
+    /**
+     * Add a global renderable, this renderable will be rendered every frame no matter what scene is active
+     * @param renderable the renderable to add
+     */
+    public void addGlobalRenderable(Renderable renderable) {
+        globalRenderables.add(renderable);
+    }
+
+    /**
+     * Remove a global updateable
+     * @param updateable the updateable to remove
+     */
+    public void removeGlobalUpdateable(Updateable updateable) {
+        globalUpdateables.remove(updateable);
+    }
+
+    /**
+     * Remove a global renderable
+     * @param renderable the renderable to remove
+     */
+    public void removeGlobalRenderable(Renderable renderable) {
+        globalRenderables.remove(renderable);
     }
 
     /**
@@ -211,6 +270,13 @@ public class Screen {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * @return the time in seconds since the engine started
+     */
+    public double getTime() {
+        return glfwGetTime();
     }
 
     /**

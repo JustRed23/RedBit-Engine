@@ -59,6 +59,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     /* JSON */
 
+    /* JOML */
+    implementation 'org.joml:joml:1.10.5'
+    /* JOML */
+
     /* LOGGING API */
     implementation 'org.slf4j:slf4j-api:2.0.7'
     /* LOGGING API */
