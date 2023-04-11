@@ -22,7 +22,7 @@ public class Window {
     private static final Logger LOGGER = LoggerFactory.getLogger(Window.class);
 
     private final WindowOptions options;
-    private boolean visible;
+    private boolean visible, focused = true;
 
     private long windowHandle;
 
@@ -86,10 +86,9 @@ public class Window {
         if (windowHandle == 0)
             throw new IllegalStateException("Window is not initialized");
 
-        glfwSetWindowFocusCallback(windowHandle, new GLFWWindowFocusCallback() {
-            public void invoke(long window, boolean focused) {
-                System.out.println("Window: " + window + ", focus: " + focused);
-            }
+        glfwSetWindowFocusCallback(windowHandle, (handle, focused) -> {
+            if (handle == windowHandle && windowHandle != 0)
+                this.focused = focused;
         });
     }
 
@@ -107,7 +106,7 @@ public class Window {
     }
 
     void render() {
-        if (windowHandle == 0 || !visible)
+        if (windowHandle == 0 || !visible || !focused)
             return;
 
         glEnable(GL_DEPTH_TEST);
@@ -115,8 +114,6 @@ public class Window {
 
         if (currentView != null)
             currentView.render();
-
-        glfwPollEvents();
     }
 
     void swapBuffers() {
@@ -125,7 +122,6 @@ public class Window {
     }
 
     public void destroy() {
-        System.out.println("destroy on " + options.title() + " (handle: " + windowHandle + ")");
         glfwFreeCallbacks(windowHandle);
         glfwDestroyWindow(windowHandle);
         windowHandle = 0;

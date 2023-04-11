@@ -9,7 +9,6 @@ public class Starter {
 
     public static void main(String[] args) {
         WindowController.createWindow(new WindowOptions(1024, 600, "RedBit", false, false));
-        WindowController.createWindow(new WindowOptions(400, 600, "Test", false, false));
         Application.launch(Engine.class, args);
     }
 }

@@ -49,10 +49,8 @@ public class WindowController {
             return;
 
         windowCount--;
-        if (windowCount == 0) {
-            System.out.println("Last window closed");
+        if (windowCount == 0)
             Engine.stopRequested = true;
-        }
     }
 
     public static List<Window> getWindows() {

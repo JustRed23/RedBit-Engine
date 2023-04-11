@@ -54,11 +54,10 @@ public class MainLoops {
 
             if (deltaF >= 1) {
                 render();
+                glfwPollEvents();
                 deltaF--;
             }
         }
-
-        System.out.println("CLEANUP");
 
         cleanup();
     }
