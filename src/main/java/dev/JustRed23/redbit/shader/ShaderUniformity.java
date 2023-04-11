@@ -1,8 +1,12 @@
 package dev.JustRed23.redbit.shader;
 
+import dev.JustRed23.redbit.utils.BufUtils;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -39,5 +43,13 @@ class ShaderUniformity {
 
     public void set(String name, @NotNull Vector3i vec) {
         glUniform3i(setupUniform(name), vec.x, vec.y, vec.z);
+    }
+
+    public void set(String name, @NotNull FloatBuffer buffer) {
+        glUniformMatrix4fv(setupUniform(name), false, buffer);
+    }
+
+    public void set(String name, @NotNull Matrix4f matrix) {
+        glUniformMatrix4fv(setupUniform(name), false, BufUtils.create(matrix));
     }
 }

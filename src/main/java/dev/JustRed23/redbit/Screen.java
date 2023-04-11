@@ -9,7 +9,9 @@ import dev.JustRed23.redbit.input.MouseCallback;
 import dev.JustRed23.redbit.mesh.MeshTexture;
 import dev.JustRed23.redbit.scene.Scene;
 import dev.JustRed23.redbit.stats.TimingManager;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -59,6 +61,8 @@ public final class Screen {
         if (!glfwInit())
             throw new EngineInitializationException("GLFW failed to initialize");
 
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
 
         if (windowHandle == NULL)
@@ -89,15 +93,17 @@ public final class Screen {
                     (vidmode.width() - pWidth.get(0)) / 2,
                     (vidmode.height() - pHeight.get(0)) / 2
             );
+
+
+            // Make the OpenGL context current
+            glfwMakeContextCurrent(windowHandle);
+            // Enable v-sync
+            glfwSwapInterval(0);
+
+            // Make the window visible
+            glfwShowWindow(windowHandle);
         }
 
-        // Make the OpenGL context current
-        glfwMakeContextCurrent(windowHandle);
-        // Enable v-sync
-        glfwSwapInterval(0);
-
-        // Make the window visible
-        glfwShowWindow(windowHandle);
         LOGGER.info("Screen initialized (took {}ms)", System.currentTimeMillis() - Engine.START_TIME);
     }
 

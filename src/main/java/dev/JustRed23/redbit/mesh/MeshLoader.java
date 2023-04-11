@@ -62,15 +62,6 @@ public class MeshLoader {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    public static void updateDataInAttributeList(int attributeNumber, int dimensions, float[] data, @NotNull Mesh mesh) {
-        glBindVertexArray(mesh.vaoID());
-        glBindBuffer(GL_ARRAY_BUFFER, mesh.vbos().get(attributeNumber));
-        glBufferData(GL_ARRAY_BUFFER, BufUtils.create(data), GL_STATIC_DRAW);
-        glVertexAttribPointer(attributeNumber, dimensions, GL_FLOAT, false, 0, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        unbindVAO();
-    }
-
     private static void bindIndicesBuffer(int[] indices, @NotNull List<Integer> vbos) {
         int vboID = glGenBuffers();
         vbos.add(vboID);
