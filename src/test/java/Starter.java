@@ -6,6 +6,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Starter {
 
+    private static boolean debug = false;
+
     public static void main(String[] args) {
         Engine.builder()
                 .title("RedBit")
@@ -21,17 +23,20 @@ public class Starter {
                                 Engine.getScreen().setScene(new TestScene());
                             else Engine.getScreen().setScene(null);
                         } catch (SceneInitializationException e) {
-                            throw new RuntimeException(e);
+                            System.err.println("Failed to initialize scene, skipping");
+                            e.printStackTrace();
                         }
                     }
                 })
                 .addMouseListener(new MouseCallback() {
                     public void move(long window, double xpos, double ypos) {
-                        System.out.println("X: " + xpos + ", Y: " + ypos);
+                        if (debug)
+                            System.out.println("X: " + xpos + ", Y: " + ypos);
                     }
 
                     public void click(long window, int button, int action, int mods) {
-                        System.out.println("Button: " + button + " Action: " + action + " Mods: " + mods);
+                        if (debug)
+                            System.out.println("Button: " + button + " Action: " + action + " Mods: " + mods);
                     }
                 })
                 .launch(args);

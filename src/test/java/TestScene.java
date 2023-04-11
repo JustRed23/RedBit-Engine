@@ -1,4 +1,6 @@
+import dev.JustRed23.redbit.mesh.MeshLoader;
 import dev.JustRed23.redbit.mesh.Mesh;
+import dev.JustRed23.redbit.mesh.TexturedMesh;
 import dev.JustRed23.redbit.scene.Scene;
 import dev.JustRed23.redbit.shader.ShaderProgram;
 import org.jetbrains.annotations.Nullable;
@@ -6,7 +8,6 @@ import org.joml.Vector3f;
 
 import java.io.IOException;
 
-import static java.lang.Math.sin;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -16,21 +17,27 @@ public class TestScene extends Scene {
     private Mesh triangle;
     private Mesh square;
 
-    private ShaderProgram shaderProgram;
+    private TexturedMesh texturedTriangle;
+    private TexturedMesh texturedSquare;
+
+    private ShaderProgram shaderProgram, texturedShaderProgram;
 
     protected void init(@Nullable Scene parent) throws IOException {
         shaderProgram = new ShaderProgram();
-        shaderProgram.setVertexShaderLoc("shaders/vertex.glsl");
-        shaderProgram.setFragmentShaderLoc("shaders/fragment.glsl");
-        shaderProgram.createShader();
+        shaderProgram.createShader("shaders/vertex.glsl", "shaders/fragment.glsl");
 
-        triangle = new Mesh(new float[] {
+        texturedShaderProgram = new ShaderProgram();
+        texturedShaderProgram.createShader("shaders/textured/vertex.glsl", "shaders/textured/fragment.glsl");
+
+        triangle = MeshLoader.createMesh(new float[] {
                 -0.5f, -0.5f, 0.0f,
                 0.5f, -0.5f, 0.0f,
                 0.0f,  0.5f, 0.0f
-        }, 3);
+        }, new int[] {
+                0, 1, 2
+        });
 
-        square = new Mesh(new float[] {
+        square = MeshLoader.createMesh(new float[] {
                 //first triangle
                 -0.5f,  0.5f, 0.0f,
                 -0.5f, -0.5f, 0.0f,
@@ -40,7 +47,43 @@ public class TestScene extends Scene {
                 -0.5f,  0.5f, 0.0f,
                 0.5f, -0.5f, 0.0f,
                 0.5f,  0.5f, 0.0f
-        }, 6);
+        }, new int[] {
+                0, 1, 2,
+                3, 4, 5
+        });
+
+        texturedTriangle = MeshLoader.createTexturedMesh(new float[] {
+                -0.5f, -0.5f, 0.0f,
+                0.5f, -0.5f, 0.0f,
+                0.0f,  0.5f, 0.0f
+        }, new float[] {
+                0, 1, //bottom left
+                1, 1, //bottom right
+                0.5f, 0 //top middle
+        }, new int[] {
+                0, 1, 2
+        }, "textures/fox.jpg");
+
+        texturedSquare = MeshLoader.createTexturedMesh(new float[] {
+                -0.75f,  0.75f, 0.0f,
+                -0.75f, -0.75f, 0.0f,
+                0.75f, -0.75f, 0.0f,
+
+                -0.75f,  0.75f, 0.0f,
+                0.75f, -0.75f, 0.0f,
+                0.75f,  0.75f, 0.0f
+        }, new float[] {
+                0, 0, //bottom left
+                0, 1, //top left
+                1, 1, //top right
+
+                0, 0, //bottom left
+                1, 1, //top right
+                1, 0  //bottom right
+        }, new int[] {
+                0, 1, 2,
+                3, 4, 5
+        }, "textures/fox.jpg");
     }
 
     protected void update() {
@@ -83,15 +126,23 @@ public class TestScene extends Scene {
 
     protected void render() {
         glClearColor(0.3f, 0f, 0f, 1f);
-        shaderProgram.bind();
-        glBindVertexArray(square.getVaoId());
-        glDrawArrays(GL_TRIANGLES, 0, square.getVertices());
-        shaderProgram.unbind();
+
+        /*shaderProgram.render(triangle, mesh -> {
+            glBindVertexArray(mesh.vaoID());
+            glDrawElements(GL_TRIANGLES, mesh.vertexCount(), GL_UNSIGNED_INT, 0);
+        });*/
+
+        texturedShaderProgram.render(texturedSquare, mesh -> {
+            glBindVertexArray(mesh.vaoID());
+            glDrawElements(GL_TRIANGLES, mesh.vertexCount(), GL_UNSIGNED_INT, 0);
+        });
     }
 
     protected void cleanup() {
+        texturedShaderProgram.cleanup();
         shaderProgram.cleanup();
         triangle.cleanup();
         square.cleanup();
+        texturedSquare.cleanup();
     }
 }

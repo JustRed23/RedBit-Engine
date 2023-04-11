@@ -1,6 +1,9 @@
 package dev.JustRed23.redbit.shader;
 
+import dev.JustRed23.redbit.mesh.Mesh;
+import dev.JustRed23.redbit.mesh.TexturedMesh;
 import dev.JustRed23.redbit.utils.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,9 +14,6 @@ import static org.lwjgl.opengl.GL20.*;
 public final class ShaderProgram extends ShaderUniformity {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShaderProgram.class);
-
-    public static String VERTEX_SHADER_LOC = null;
-    public static String FRAGMENT_SHADER_LOC = null;
 
     private Shader vertexShader, fragmentShader;
 
@@ -30,9 +30,12 @@ public final class ShaderProgram extends ShaderUniformity {
         glUseProgram(programId);
     }
 
-    public void createShader() throws IOException {
-        String vertexShaderSource = FileUtils.readFile(VERTEX_SHADER_LOC);
-        String fragmentShaderSource = FileUtils.readFile(FRAGMENT_SHADER_LOC);
+    public void createShader(@NotNull String vertex, @NotNull String fragment) throws IOException {
+        if (vertex.isBlank() || fragment.isBlank())
+            throw new RuntimeException("Shader locations not set");
+
+        String vertexShaderSource = FileUtils.readFile(vertex);
+        String fragmentShaderSource = FileUtils.readFile(fragment);
 
         Shader vertexShader = new Shader(vertexShaderSource, GL_VERTEX_SHADER);
         Shader fragmentShader = new Shader(fragmentShaderSource, GL_FRAGMENT_SHADER);
@@ -43,14 +46,33 @@ public final class ShaderProgram extends ShaderUniformity {
         glAttachShader(programId, vertexShader.getShaderId());
         glAttachShader(programId, fragmentShader.getShaderId());
 
-        glLinkProgram(programId);
-        if (glGetProgrami(programId, GL_LINK_STATUS) == 0)
-            LOGGER.error(glGetProgramInfoLog(programId, 1024));
-
+        link();
         validate();
 
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
+    }
+
+    public void render(Mesh mesh, RenderCallback render) {
+        bind();
+        for (int i = 0; i < mesh.attribCount(); i++)
+            glEnableVertexAttribArray(i);
+        render.render(mesh);
+        for (int i = 0; i < mesh.attribCount(); i++)
+            glDisableVertexAttribArray(i);
+        unbind();
+    }
+
+    public void render(TexturedMesh texturedMesh, RenderCallback render) {
+        bind();
+        for (int i = 0; i < texturedMesh.attribCount(); i++)
+            glEnableVertexAttribArray(i);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texturedMesh.textureID());
+        render.render(texturedMesh);
+        for (int i = 0; i < texturedMesh.attribCount(); i++)
+            glDisableVertexAttribArray(i);
+        unbind();
     }
 
     public void unbind() {
@@ -69,18 +91,16 @@ public final class ShaderProgram extends ShaderUniformity {
             glDeleteProgram(programId);
     }
 
-    public void validate() {
-        glValidateProgram(programId);
-        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0)
+    private void link() {
+        glLinkProgram(programId);
+        if (glGetProgrami(programId, GL_LINK_STATUS) == 0)
             LOGGER.error(glGetProgramInfoLog(programId, 1024));
     }
 
-    public void setVertexShaderLoc(String loc) {
-        VERTEX_SHADER_LOC = loc;
-    }
-
-    public void setFragmentShaderLoc(String loc) {
-        FRAGMENT_SHADER_LOC = loc;
+    private void validate() {
+        glValidateProgram(programId);
+        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0)
+            LOGGER.error(glGetProgramInfoLog(programId, 1024));
     }
 
     public int getProgramId() {

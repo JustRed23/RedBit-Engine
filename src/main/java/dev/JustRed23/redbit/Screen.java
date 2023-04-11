@@ -6,6 +6,7 @@ import dev.JustRed23.redbit.func.Renderable;
 import dev.JustRed23.redbit.func.Updateable;
 import dev.JustRed23.redbit.input.KeyCallback;
 import dev.JustRed23.redbit.input.MouseCallback;
+import dev.JustRed23.redbit.mesh.MeshTexture;
 import dev.JustRed23.redbit.scene.Scene;
 import dev.JustRed23.redbit.stats.TimingManager;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -151,6 +152,7 @@ public final class Screen {
             }
         }
 
+        MeshTexture.cleanup();
         Engine.exit();
     }
 
@@ -183,16 +185,17 @@ public final class Screen {
      * @param scene the new scene
      */
     public void setScene(Scene scene) throws SceneInitializationException {
-        if (currentScene != null)
-            currentScene.onCleanup();
-        lastScene = currentScene;
-
-        currentScene = scene;
         try {
+            if (scene != null)
+                scene.onInit();
+
             if (currentScene != null)
-                currentScene.onInit();
+                currentScene.onCleanup();
+
+            lastScene = currentScene;
+            currentScene = scene;
         } catch (Exception e) {
-            throw new SceneInitializationException("Could not initialize new scene", e);
+            throw new SceneInitializationException("Scene loading failed", e);
         }
     }
 

@@ -3,8 +3,9 @@ package dev.JustRed23.redbit.utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
+import java.net.URL;
 
-public class FileUtils {
+public final class FileUtils {
 
     public static @Nullable String readFile(String path) {
         try (InputStream resourceAsStream = FileUtils.class.getClassLoader().getResourceAsStream(path)) {
@@ -15,5 +16,9 @@ public class FileUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static @Nullable URL getResource(String path) {
+        return FileUtils.class.getClassLoader().getResource(path);
     }
 }
