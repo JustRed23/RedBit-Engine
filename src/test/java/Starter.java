@@ -8,7 +8,8 @@ public class Starter {
     private static boolean debug = false;
 
     public static void main(String[] args) {
-        WindowController.createWindow(new WindowOptions(1024, 600, "RedBit", false, false));
+        WindowController.createWindow(new WindowOptions(1024, 600, "RedBit", false, false, true));
+        //WindowController.createWindow(new WindowOptions(800, 400, "RedBit TEST", true, false, false));
         Application.launch(Engine.class, args);
     }
 }

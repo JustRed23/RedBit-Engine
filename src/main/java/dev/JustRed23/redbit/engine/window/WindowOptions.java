@@ -1,6 +1,9 @@
 package dev.JustRed23.redbit.engine.window;
 
-public record WindowOptions(int width, int height, String title, boolean resizable, boolean fullscreen) {
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+public record WindowOptions(int width, int height, String title, boolean resizable, boolean fullscreen, boolean exitOnClose) {
 
     private static int aspectRatio;
 
@@ -14,8 +17,9 @@ public record WindowOptions(int width, int height, String title, boolean resizab
         aspectRatio = width / height;
     }
 
-    public static WindowOptions getDefault() {
-        return new WindowOptions(800, 600, "RedBit", false, false);
+    @Contract(" -> new")
+    public static @NotNull WindowOptions getDefault() {
+        return new WindowOptions(800, 600, "RedBit", false, false, true);
     }
 
     public int aspectRatio() {

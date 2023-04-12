@@ -28,6 +28,9 @@ public class Window {
 
     private View currentView, lastView;
 
+    private Runnable onUpdate = () -> {};
+    private Runnable onRender = () -> {};
+
     Window(WindowOptions options) {
         this.options = options;
     }
@@ -103,6 +106,8 @@ public class Window {
 
         if (currentView != null)
             currentView.update();
+
+        onUpdate.run();
     }
 
     void render() {
@@ -111,9 +116,12 @@ public class Window {
 
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         if (currentView != null)
             currentView.render();
+
+        onRender.run();
     }
 
     void swapBuffers() {
@@ -125,7 +133,7 @@ public class Window {
         glfwFreeCallbacks(windowHandle);
         glfwDestroyWindow(windowHandle);
         windowHandle = 0;
-        WindowController.checkIfLastWindow();
+        WindowController.checkIfLastWindow(options.exitOnClose());
     }
 
     public void show() {
@@ -136,6 +144,14 @@ public class Window {
     public void hide() {
         glfwHideWindow(windowHandle);
         visible = false;
+    }
+
+    public void setGlobalUpdate(Runnable onUpdate) {
+        this.onUpdate = onUpdate;
+    }
+
+    public void setGlobalRender(Runnable onRender) {
+        this.onRender = onRender;
     }
 
     public boolean setView(View view) {

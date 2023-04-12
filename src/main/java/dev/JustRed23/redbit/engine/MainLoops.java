@@ -32,7 +32,7 @@ public class MainLoops {
 
         WindowController.ready();
 
-        while (!Engine.stopRequested) {
+        while (!Engine.stopRequested && !Thread.currentThread().isInterrupted()) {
             long currentTime = System.nanoTime();
             deltaU += (currentTime - updateTime) / timeU;
             deltaF += (currentTime - updateTime) / timeF;

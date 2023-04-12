@@ -44,12 +44,12 @@ public class WindowController {
 
     private static boolean ready = false;
 
-    static void checkIfLastWindow() {
+    static void checkIfLastWindow(boolean exitOnClose) {
         if (!ready)
             return;
 
         windowCount--;
-        if (windowCount == 0)
+        if (windowCount == 0 || exitOnClose)
             Engine.stopRequested = true;
     }
 
