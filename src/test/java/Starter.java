@@ -16,7 +16,7 @@ public class Starter {
 
     public static void main(String[] args) {
         Window mainWindow = WindowController.createWindow(new WindowOptions(1024, 600, "RedBit", false, false, true, "logo.png"));
-        WindowController.createWindow(new WindowOptions(800, 400, "RedBit TEST", true, false, false, "logo.png"));
+        //WindowController.createWindow(new WindowOptions(800, 400, "RedBit TEST", true, false, false, "logo.png"));
 
         CallbackController.addCallback(mainWindow, (KeyCallback) (key, action, mods) -> {
             if (debug)
