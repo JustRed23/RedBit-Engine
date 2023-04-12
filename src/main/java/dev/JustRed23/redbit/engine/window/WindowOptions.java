@@ -3,7 +3,7 @@ package dev.JustRed23.redbit.engine.window;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public record WindowOptions(int width, int height, String title, boolean resizable, boolean fullscreen, boolean exitOnClose) {
+public record WindowOptions(int width, int height, String title, boolean resizable, boolean fullscreen, boolean exitOnClose, String iconPath) {
 
     private static int aspectRatio;
 
@@ -19,7 +19,7 @@ public record WindowOptions(int width, int height, String title, boolean resizab
 
     @Contract(" -> new")
     public static @NotNull WindowOptions getDefault() {
-        return new WindowOptions(800, 600, "RedBit", false, false, true);
+        return new WindowOptions(800, 600, "RedBit", false, false, true, null);
     }
 
     public int aspectRatio() {

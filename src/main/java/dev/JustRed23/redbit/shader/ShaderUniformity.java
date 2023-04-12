@@ -1,6 +1,6 @@
 package dev.JustRed23.redbit.shader;
 
-import dev.JustRed23.redbit.utils.BufUtils;
+import dev.JustRed23.redbit.engine.utils.BufUtils;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

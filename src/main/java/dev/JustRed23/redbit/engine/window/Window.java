@@ -3,7 +3,8 @@ package dev.JustRed23.redbit.engine.window;
 import dev.JustRed23.redbit.engine.Engine;
 import dev.JustRed23.redbit.engine.callback.CallbackController;
 import dev.JustRed23.redbit.engine.err.WindowInitException;
-import org.lwjgl.glfw.GLFWScrollCallback;
+import dev.JustRed23.redbit.engine.utils.FileUtils;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -55,6 +56,15 @@ public class Window {
             toggleFullscreen();
 
         windowHandle = glfwCreateWindow(width, height, options.title(), options.fullscreen() ? glfwGetPrimaryMonitor() : NULL, NULL);
+
+        if (options.iconPath() != null) {
+            GLFWImage image = FileUtils.loadImage(options.iconPath());
+
+            try (GLFWImage.Buffer buffer = GLFWImage.malloc(1)) {
+                buffer.put(0, image);
+                glfwSetWindowIcon(windowHandle, buffer);
+            }
+        }
 
         if (windowHandle == NULL)
             throw new WindowInitException("GLFW failed to create a window");

@@ -1,6 +1,6 @@
 package dev.JustRed23.redbit.mesh;
 
-import dev.JustRed23.redbit.utils.FileUtils;
+import dev.JustRed23.redbit.engine.utils.FileUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;

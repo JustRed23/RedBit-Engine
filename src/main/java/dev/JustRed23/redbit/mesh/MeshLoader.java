@@ -1,6 +1,6 @@
 package dev.JustRed23.redbit.mesh;
 
-import dev.JustRed23.redbit.utils.BufUtils;
+import dev.JustRed23.redbit.engine.utils.BufUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL30;
