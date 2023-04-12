@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFWErrorCallback.getDescription;
 
 public class Engine extends Application {
 
@@ -25,7 +26,7 @@ public class Engine extends Application {
 
     protected void init() throws Exception {
         FileStructure.discover(NoFileStructure.class);
-        glfwSetErrorCallback((error, description) -> LOGGER.error("GLFW error: " + error + " - " + description));
+        glfwSetErrorCallback((error, description) -> LOGGER.error("GLFW Error " + error + " - " + getDescription(description)));
     }
 
     protected void start() throws Exception {

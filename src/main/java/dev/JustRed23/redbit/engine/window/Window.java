@@ -1,9 +1,10 @@
 package dev.JustRed23.redbit.engine.window;
 
 import dev.JustRed23.redbit.engine.Engine;
+import dev.JustRed23.redbit.engine.callback.CallbackController;
 import dev.JustRed23.redbit.engine.err.WindowInitException;
+import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -22,7 +23,10 @@ public class Window {
     private static final Logger LOGGER = LoggerFactory.getLogger(Window.class);
 
     private final WindowOptions options;
+    private int centerX, centerY, width, height;
+
     private boolean visible, focused = true;
+    private boolean fullscreen;
 
     private long windowHandle;
 
@@ -42,9 +46,15 @@ public class Window {
         if (!glfwInit())
             throw new WindowInitException("GLFW failed to initialize");
 
+        this.width = options.width();
+        this.height = options.height();
+
         glfwWindowHint(GLFW_RESIZABLE, options.resizable() ? GLFW_TRUE : GLFW_FALSE);
 
-        windowHandle = glfwCreateWindow(options.width(), options.height(), options.title(), NULL, NULL);
+        if (options.fullscreen())
+            toggleFullscreen();
+
+        windowHandle = glfwCreateWindow(width, height, options.title(), options.fullscreen() ? glfwGetPrimaryMonitor() : NULL, NULL);
 
         if (windowHandle == NULL)
             throw new WindowInitException("GLFW failed to create a window");
@@ -64,12 +74,11 @@ public class Window {
             if (vidmode == null)
                 throw new WindowInitException("GLFW failed to get the primary monitor");
 
+            this.centerX = (vidmode.width() - pWidth.get(0)) / 2;
+            this.centerY = (vidmode.height() - pHeight.get(0)) / 2;
+
             // Center the window
-            glfwSetWindowPos(
-                    windowHandle,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
+            glfwSetWindowPos(windowHandle, centerX, centerY);
 
 
             // Make the OpenGL context current
@@ -93,12 +102,39 @@ public class Window {
             if (handle == windowHandle && windowHandle != 0)
                 this.focused = focused;
         });
+
+        glfwSetKeyCallback(windowHandle, (handle, key, scancode, action, mods) -> {
+            if (handle == windowHandle && windowHandle != 0)
+                CallbackController.keyCallback(this, key, action, mods);
+        });
+
+        glfwSetMouseButtonCallback(windowHandle, (handle, button, action, mods) -> {
+            if (handle == windowHandle && windowHandle != 0)
+                CallbackController.mouseButtonCallback(this, button, action, mods);
+        });
+
+        glfwSetCursorPosCallback(windowHandle, (handle, xpos, ypos) -> {
+            if (handle == windowHandle && windowHandle != 0)
+                CallbackController.mousePosCallback(this, xpos, ypos);
+        });
+
+        glfwSetScrollCallback(windowHandle, (handle, xoffset, yoffset) -> {
+            if (handle == windowHandle && windowHandle != 0)
+                CallbackController.mouseScrollCallback(this, yoffset);
+        });
+
+        if (options.resizable()) {
+            glfwSetFramebufferSizeCallback(windowHandle, (handle, width, height) -> {
+                if (handle == windowHandle && windowHandle != 0) {
+                    glViewport(0, 0, width, height);
+                    this.width = width;
+                    this.height = height;
+                }
+            });
+        }
     }
 
     void update() {
-        if (windowHandle == 0)
-            return;
-
         if (glfwWindowShouldClose(windowHandle)) {
             destroy();
             return;
@@ -111,7 +147,7 @@ public class Window {
     }
 
     void render() {
-        if (windowHandle == 0 || !visible || !focused)
+        if (!visible || !focused)
             return;
 
         glEnable(GL_DEPTH_TEST);
@@ -125,14 +161,17 @@ public class Window {
     }
 
     void swapBuffers() {
-        if (windowHandle != 0 && visible)
+        if (visible)
             glfwSwapBuffers(windowHandle);
     }
 
     public void destroy() {
         glfwFreeCallbacks(windowHandle);
+        CallbackController.clearCallbacks(this);
+
         glfwDestroyWindow(windowHandle);
         windowHandle = 0;
+
         WindowController.checkIfLastWindow(options.exitOnClose());
     }
 
@@ -144,6 +183,15 @@ public class Window {
     public void hide() {
         glfwHideWindow(windowHandle);
         visible = false;
+    }
+
+    public void toggleFullscreen() {
+        fullscreen = !fullscreen;
+
+        this.width = fullscreen ? glfwGetVideoMode(glfwGetPrimaryMonitor()).width() : options.width();
+        this.height = fullscreen ? glfwGetVideoMode(glfwGetPrimaryMonitor()).height() : options.height();
+
+        glfwSetWindowMonitor(windowHandle, fullscreen ? glfwGetPrimaryMonitor() : NULL, fullscreen ? 0 : centerX, fullscreen ? 0 : centerY, width, height, GLFW_DONT_CARE);
     }
 
     public void setGlobalUpdate(Runnable onUpdate) {
@@ -181,5 +229,13 @@ public class Window {
 
     public long getWindowHandle() {
         return windowHandle;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

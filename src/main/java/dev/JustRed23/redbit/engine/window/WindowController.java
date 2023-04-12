@@ -27,15 +27,15 @@ public class WindowController {
     /* EVENTS */
 
     public static void update() {
-        windows.forEach(Window::update);
+        windows.stream().filter(windows -> windows.getWindowHandle() != 0).forEach(Window::update);
     }
 
     public static void render() {
-        windows.forEach(Window::render);
+        windows.stream().filter(windows -> windows.getWindowHandle() != 0).forEach(Window::render);
     }
 
     public static void swapBuffers() {
-        windows.forEach(Window::swapBuffers);
+        windows.stream().filter(windows -> windows.getWindowHandle() != 0).forEach(Window::swapBuffers);
     }
 
     /* EVENTS */
@@ -65,6 +65,19 @@ public class WindowController {
         for (Window window : windows) {
             window.setup();
         }
+    }
+
+    public static void cleanup() {
+        if (!ready)
+            return;
+
+        for (Window window : windows) {
+            if (window.getWindowHandle() != 0) //already gone
+                window.destroy();
+        }
+
+        windows.clear();
+        windowCount = 0;
     }
 
     /* INTERNAL */

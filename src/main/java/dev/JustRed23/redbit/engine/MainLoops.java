@@ -1,5 +1,6 @@
 package dev.JustRed23.redbit.engine;
 
+import dev.JustRed23.redbit.engine.callback.CallbackController;
 import dev.JustRed23.redbit.engine.err.WindowInitException;
 import dev.JustRed23.redbit.engine.window.WindowController;
 
@@ -59,6 +60,7 @@ public class MainLoops {
             }
         }
 
+        Engine.LOGGER.info("Cleaning up...");
         cleanup();
     }
 
@@ -74,6 +76,8 @@ public class MainLoops {
     }
 
     void cleanup() {
+        WindowController.cleanup();
+        CallbackController.cleanup();
         glfwTerminate();
         glfwSetErrorCallback(null).free();
         Engine.exit();
