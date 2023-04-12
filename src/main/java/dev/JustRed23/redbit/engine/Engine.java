@@ -43,6 +43,17 @@ public class Engine extends Application {
 
     }
 
+    public static void halt(boolean force) {
+        if (force)
+            System.exit(0);
+        else
+            stopRequested = true;
+    }
+
+    public static void halt() {
+        halt(false);
+    }
+
     public static int getFps() {
         return fps;
     }
