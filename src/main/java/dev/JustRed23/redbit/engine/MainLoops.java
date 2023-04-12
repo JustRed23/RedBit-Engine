@@ -41,7 +41,7 @@ public class MainLoops {
             fpscounter += (currentTime - updateTime) / 1_000_000_000d;
 
             if (fpscounter >= 1) {
-                Engine.updateCounters(renders, updates);
+                CallbackController.counterUpdateCallback(renders, updates);
                 fpscounter = 0;
                 updates = 0;
                 renders = 0;

@@ -7,13 +7,16 @@ import java.util.*;
 
 public class CallbackController {
 
+    private static final List<CounterUpdateCallback> counterUpdateCallbacks = new ArrayList<>();
     private static final Map<Window, List<KeyCallback>> keyCallbacks = new HashMap<>();
     private static final Map<Window, List<MouseButtonCallback>> mouseCallbacks = new HashMap<>();
     private static final Map<Window, List<MousePosCallback>> mousePosCallbacks = new HashMap<>();
     private static final Map<Window, List<MouseScrollCallback>> mouseScrollCallbacks = new HashMap<>();
 
     public static void addCallback(Window window, Callback callback) {
-        if (callback instanceof KeyCallback keyCallback)
+        if (callback instanceof CounterUpdateCallback counterUpdateCallback)
+            counterUpdateCallbacks.add(counterUpdateCallback);
+        else if (callback instanceof KeyCallback keyCallback)
             keyCallbacks.computeIfAbsent(window, k -> new ArrayList<>())
                     .add(keyCallback);
         else if (callback instanceof MouseButtonCallback mouseButtonCallback)
@@ -28,6 +31,10 @@ public class CallbackController {
     }
 
     /* INTERNAL */
+    public static void counterUpdateCallback(int fps, int ups) {
+        counterUpdateCallbacks.forEach(cb -> cb.invoke(fps, ups));
+    }
+
     public static void keyCallback(Window window, int key, int action, int mods) {
         final List<KeyCallback> keyCallbacks1 = keyCallbacks.get(window);
         if (keyCallbacks1 != null)

@@ -1,10 +1,12 @@
 import dev.JustRed23.redbit.engine.Engine;
 import dev.JustRed23.redbit.engine.callback.CallbackController;
+import dev.JustRed23.redbit.engine.callback.callbacks.CounterUpdateCallback;
 import dev.JustRed23.redbit.engine.callback.callbacks.KeyCallback;
 import dev.JustRed23.redbit.engine.window.Window;
 import dev.JustRed23.redbit.engine.window.WindowController;
 import dev.JustRed23.redbit.engine.window.WindowOptions;
 import dev.JustRed23.stonebrick.app.Application;
+import dev.JustRed23.stonebrick.data.FileStructure;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -14,7 +16,7 @@ public class Starter {
 
     public static void main(String[] args) {
         Window mainWindow = WindowController.createWindow(new WindowOptions(1024, 600, "RedBit", false, false, true, "logo.png"));
-        //WindowController.createWindow(new WindowOptions(800, 400, "RedBit TEST", true, false, false, "logo.png"));
+        WindowController.createWindow(new WindowOptions(800, 400, "RedBit TEST", true, false, false, "logo.png"));
 
         CallbackController.addCallback(mainWindow, (KeyCallback) (key, action, mods) -> {
             if (debug)
@@ -27,6 +29,9 @@ public class Starter {
                 mainWindow.toggleFullscreen();
         });
 
+        CallbackController.addCallback(null, (CounterUpdateCallback) (fps, ups) -> mainWindow.setTitle("RedBit - FPS: " + fps + " UPS: " + ups));
+
+        FileStructure.discover(NoFileStructure.class);
         Application.launch(Engine.class, args);
     }
 }

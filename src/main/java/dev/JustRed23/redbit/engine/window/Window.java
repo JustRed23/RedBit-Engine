@@ -229,6 +229,10 @@ public class Window {
         return true;
     }
 
+    public void setTitle(String title) {
+        glfwSetWindowTitle(windowHandle, title);
+    }
+
     public View getCurrentView() {
         return currentView;
     }

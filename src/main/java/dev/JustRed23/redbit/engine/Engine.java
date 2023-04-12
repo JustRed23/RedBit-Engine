@@ -2,7 +2,6 @@ package dev.JustRed23.redbit.engine;
 
 import dev.JustRed23.redbit.engine.err.WindowInitException;
 import dev.JustRed23.stonebrick.app.Application;
-import dev.JustRed23.stonebrick.data.FileStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +16,9 @@ public class Engine extends Application {
     public static boolean stopRequested = false;
     static boolean initialized = false;
 
-    static int fps, ups;
-
-    static void updateCounters(int fps, int ups) {
-        Engine.fps = fps;
-        Engine.ups = ups;
-    }
-
     protected void init() throws Exception {
-        FileStructure.discover(NoFileStructure.class);
         glfwSetErrorCallback((error, description) -> LOGGER.error("GLFW Error " + error + " - " + getDescription(description)));
+        LOGGER.info("Running LWJGL version " + org.lwjgl.Version.getVersion());
     }
 
     protected void start() throws Exception {
@@ -52,13 +44,5 @@ public class Engine extends Application {
 
     public static void halt() {
         halt(false);
-    }
-
-    public static int getFps() {
-        return fps;
-    }
-
-    public static int getUps() {
-        return ups;
     }
 }
