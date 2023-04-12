@@ -11,7 +11,7 @@ import static org.lwjgl.glfw.GLFWErrorCallback.getDescription;
 public class Engine extends Application {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(Engine.class);
-    public static final long START_TIME = System.currentTimeMillis();
+    public static final long START_TIME = System.nanoTime();
 
     public static boolean stopRequested = false;
     static boolean initialized = false;

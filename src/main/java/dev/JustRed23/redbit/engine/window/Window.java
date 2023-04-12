@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.IntBuffer;
+import java.util.concurrent.TimeUnit;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -101,7 +102,7 @@ public class Window {
 
         GL.createCapabilities();
 
-        LOGGER.info("Screen " + options.title() + " initialized (took {}ms)", System.currentTimeMillis() - Engine.START_TIME);
+        LOGGER.info("Screen " + options.title() + " initialized (took {}ms)", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - Engine.START_TIME));
     }
 
     private void createCallbacks() {

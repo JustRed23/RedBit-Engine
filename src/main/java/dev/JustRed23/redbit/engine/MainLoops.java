@@ -25,8 +25,8 @@ public class MainLoops {
 
     private void run() throws WindowInitException {
         long initialTime = System.nanoTime();
-        final double timeU = 1_000_000_000d / ups;
-        final double timeF = 1_000_000_000d / fps;
+        final double timeU = 1E9 / ups;
+        final double timeF = 1E9 / fps;
 
         double fpscounter = 0;
         double deltaU = 0, deltaF = 0;
