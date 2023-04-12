@@ -1,4 +1,4 @@
-package dev.JustRed23.redbit.shader;
+package dev.JustRed23.redbit.engine.render;
 
 import dev.JustRed23.redbit.mesh.Mesh;
 import dev.JustRed23.redbit.mesh.TexturedMesh;
@@ -19,18 +19,19 @@ public final class ShaderProgram extends ShaderUniformity {
 
     private final int programId;
 
-    public ShaderProgram() {
+    public ShaderProgram(String vertexPath, String fragmentPath) throws IOException {
         this.programId = glCreateProgram();
         if (programId == 0)
             throw new RuntimeException("Could not create Shader");
         super.setProgramId(programId);
+        createShader(vertexPath, fragmentPath);
     }
 
     public void bind() {
         glUseProgram(programId);
     }
 
-    public void createShader(@NotNull String vertex, @NotNull String fragment) throws IOException {
+    private void createShader(@NotNull String vertex, @NotNull String fragment) throws IOException {
         if (vertex.isBlank() || fragment.isBlank())
             throw new RuntimeException("Shader locations not set");
 
@@ -51,28 +52,6 @@ public final class ShaderProgram extends ShaderUniformity {
 
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
-    }
-
-    public void render(Mesh mesh, RenderCallback render) {
-        bind();
-        for (int i = 0; i < mesh.attribCount(); i++)
-            glEnableVertexAttribArray(i);
-        render.render(mesh);
-        for (int i = 0; i < mesh.attribCount(); i++)
-            glDisableVertexAttribArray(i);
-        unbind();
-    }
-
-    public void render(TexturedMesh texturedMesh, RenderCallback render) {
-        bind();
-        for (int i = 0; i < texturedMesh.attribCount(); i++)
-            glEnableVertexAttribArray(i);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texturedMesh.textureID());
-        render.render(texturedMesh);
-        for (int i = 0; i < texturedMesh.attribCount(); i++)
-            glDisableVertexAttribArray(i);
-        unbind();
     }
 
     public void unbind() {

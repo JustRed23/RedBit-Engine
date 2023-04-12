@@ -1,4 +1,4 @@
-package dev.JustRed23.redbit.shader;
+package dev.JustRed23.redbit.engine.render;
 
 import dev.JustRed23.redbit.engine.utils.BufUtils;
 import org.jetbrains.annotations.NotNull;

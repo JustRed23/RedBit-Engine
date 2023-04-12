@@ -1,11 +1,11 @@
-package dev.JustRed23.redbit.shader;
+package dev.JustRed23.redbit.engine.render;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class Shader {
+class Shader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Shader.class);
 
