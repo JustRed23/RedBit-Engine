@@ -37,7 +37,7 @@ public class Starter {
 
         CallbackController.addCallback(null, (CounterUpdateCallback) (fps, ups) -> mainWindow.setTitle("RedBit - FPS: " + fps + " UPS: " + ups));
 
-        FileStructure.discover(NoFileStructure.class);
+        FileStructure.disable();
         Application.launch(Engine.class, args);
     }
 }
