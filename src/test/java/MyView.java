@@ -19,17 +19,17 @@ public class MyView extends View {
     public void setup(Window parent) throws Exception {
         screenWidth = parent.getWidth();
         screenHeight = parent.getHeight();
-        camera = new Camera(new Vector2f(), screenWidth, screenHeight);
+        camera = new Camera(new Vector2f(-(screenWidth / 2f), -(screenHeight / 2f)), screenWidth, screenHeight);
 
         basicShader = new ShaderProgram("shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
         texturedShader = new ShaderProgram("shaders/textured/vertex.glsl", "shaders/textured/fragment.glsl");
 
         float mySquareSize = 100f;
         square = new ColoredMesh(new float[] {
-                mySquareSize, 0, 0.0f, //bottom right
-                0, mySquareSize, 0.0f, //top left
+                mySquareSize, -mySquareSize, 0.0f, //bottom right
+                -mySquareSize, mySquareSize, 0.0f, //top left
                 mySquareSize, mySquareSize, 0.0f,  //top right
-                0, 0, 0.0f //bottom left
+                -mySquareSize, -mySquareSize, 0.0f //bottom left
         }, new int[] {
                 0, 1, 2, //top right triangle
                 0, 1, 3 //bottom left triangle
@@ -64,13 +64,17 @@ public class MyView extends View {
     public void render() throws UniformException {
         glClearColor(0.3f, 0, 0, 1);
 
-        texturedShader.set("uTextureSampler", 0);
-        texturedSquare.render(texturedShader);
+        //texturedShader.set("uTextureSampler", 0);
+        //texturedSquare.render(texturedShader);
 
         basicShader.set("uProjectionMatrix", camera.getProjectionMatrix());
         basicShader.set("uViewMatrix", camera.getViewMatrix());
 
         square.render(basicShader);
+    }
+
+    public void wireframe() {
+        square.setShowWireframe(!square.isShowingWireframe());
     }
 
     public void cleanup() {

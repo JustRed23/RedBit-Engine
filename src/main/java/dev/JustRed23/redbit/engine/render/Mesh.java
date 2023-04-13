@@ -4,7 +4,6 @@ import dev.JustRed23.redbit.engine.utils.GLUtils;
 import org.lwjgl.opengl.GL30;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -17,6 +16,8 @@ public abstract class Mesh {
     private final List<Integer> vbos = new ArrayList<>();
 
     private final int verticesCount;
+
+    private boolean showWireframe = false;
 
     protected Mesh(float[] vertices, int[] indices, Function<List<Integer>, Void> vboCreateFunction) {
         this.vaoId = glGenVertexArrays();
@@ -44,7 +45,9 @@ public abstract class Mesh {
             glBindTexture(GL_TEXTURE_2D, textured.getTextureID());
         }
 
+        if (showWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, verticesCount, GL_UNSIGNED_INT, 0);
+        if (showWireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         for (int i = 0; i < getAttributeCount(); i++)
             glDisableVertexAttribArray(i);
@@ -56,6 +59,14 @@ public abstract class Mesh {
     public void cleanup() {
         vbos.forEach(GL30::glDeleteBuffers);
         glDeleteVertexArrays(vaoId);
+    }
+
+    public void setShowWireframe(boolean show) {
+        showWireframe = show;
+    }
+
+    public boolean isShowingWireframe() {
+        return showWireframe;
     }
 
     public final int getAttributeCount() {

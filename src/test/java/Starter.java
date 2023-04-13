@@ -19,7 +19,7 @@ public class Starter {
         Window mainWindow = WindowController.createWindow(new WindowOptions(1024, 600, "RedBit", false, false, true, "logo.png"));
         //WindowController.createWindow(new WindowOptions(800, 400, "RedBit TEST", true, false, false, "logo.png"));
 
-        View view = new MyView();
+        MyView view = new MyView();
 
         CallbackController.addCallback(mainWindow, (KeyCallback) (key, action, mods) -> {
             if (debug)
@@ -30,6 +30,9 @@ public class Starter {
 
             if (key == GLFW_KEY_ENTER && action == GLFW_RELEASE)
                 mainWindow.setView(mainWindow.getCurrentView() == view ? null : view);
+
+            if (key == GLFW_KEY_F2 && action == GLFW_RELEASE)
+                view.wireframe();
 
             if (key == GLFW_KEY_F11 && action == GLFW_RELEASE)
                 mainWindow.toggleFullscreen();
