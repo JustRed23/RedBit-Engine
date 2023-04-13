@@ -3,6 +3,7 @@ package dev.JustRed23.redbit.engine;
 import dev.JustRed23.redbit.engine.callback.CallbackController;
 import dev.JustRed23.redbit.engine.err.WindowInitException;
 import dev.JustRed23.redbit.engine.utils.FileUtils;
+import dev.JustRed23.redbit.engine.utils.TextureUtils;
 import dev.JustRed23.redbit.engine.window.WindowController;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -79,6 +80,7 @@ public class MainLoops {
     void cleanup() {
         WindowController.cleanup();
         CallbackController.cleanup();
+        TextureUtils.cleanup();
         glfwTerminate();
         glfwSetErrorCallback(null).free();
         FileUtils.cleanup();
