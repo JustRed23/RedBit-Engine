@@ -140,6 +140,8 @@ public class Window {
                     glViewport(0, 0, width, height);
                     this.width = width;
                     this.height = height;
+                    if (currentView != null)
+                        currentView.camera.updateProjection(width, height);
                 }
             });
         }

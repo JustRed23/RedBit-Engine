@@ -26,10 +26,10 @@ public class MyView extends View {
 
         float mySquareSize = 100f;
         square = new ColoredMesh(new float[] {
-                mySquareSize, -mySquareSize, 0.0f, //bottom right
-                -mySquareSize, mySquareSize, 0.0f, //top left
+                mySquareSize, 0, 0.0f, //bottom right
+                0, mySquareSize, 0.0f, //top left
                 mySquareSize, mySquareSize, 0.0f,  //top right
-                -mySquareSize, -mySquareSize, 0.0f //bottom left
+                0, 0, 0.0f //bottom left
         }, new int[] {
                 0, 1, 2, //top right triangle
                 0, 1, 3 //bottom left triangle
