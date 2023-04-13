@@ -155,7 +155,7 @@ public class Window {
 
         if (currentView != null) {
             try {
-                currentView.update();
+                currentView._update();
             } catch (Exception e) {
                 LOGGER.error("An error occurred while updating a view (" + currentView.getClass().getSimpleName() + ")", e);
                 setView(null);
@@ -175,7 +175,7 @@ public class Window {
 
         if (currentView != null) {
             try {
-                currentView.render();
+                currentView._render();
             } catch (Exception e) {
                 LOGGER.error("An error occurred while rendering a view (" + currentView.getClass().getSimpleName() + ")", e);
                 setView(null);
@@ -230,14 +230,14 @@ public class Window {
     public boolean setView(View view) {
         try {
             if (view != null)
-                view.setup(this);
+                view._setup(this);
         } catch (Exception e) {
             LOGGER.error("Failed to setup view: " + view.getClass().getSimpleName(), e);
             return false;
         }
 
         if (currentView != null)
-            currentView.cleanup();
+            currentView._cleanup();
 
         lastView = currentView;
         currentView = view;

@@ -16,7 +16,7 @@ public class MyView extends View {
 
     private int screenWidth, screenHeight;
 
-    public void setup(Window parent) throws Exception {
+    protected void setup(Window parent) throws Exception {
         screenWidth = parent.getWidth();
         screenHeight = parent.getHeight();
         camera = new Camera(new Vector2f(-(screenWidth / 2f), -(screenHeight / 2f)), screenWidth, screenHeight);
@@ -57,11 +57,11 @@ public class MyView extends View {
         }, "textures/fox.jpg");
     }
 
-    public void update() {
+    protected void update() {
 
     }
 
-    public void render() throws UniformException {
+    protected void render() throws UniformException {
         glClearColor(0.3f, 0, 0, 1);
 
         //texturedShader.set("uTextureSampler", 0);
@@ -74,10 +74,13 @@ public class MyView extends View {
     }
 
     public void wireframe() {
+        if (!isVisible())
+            return;
+
         square.setShowWireframe(!square.isShowingWireframe());
     }
 
-    public void cleanup() {
+    protected void cleanup() {
         basicShader.cleanup();
         square.cleanup();
 
