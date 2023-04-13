@@ -47,7 +47,6 @@ public class MyView extends View {
         basicShader.bind();
         basicShader.set("uProjectionMatrix", camera.getProjectionMatrix());
         basicShader.set("uViewMatrix", camera.getViewMatrix());
-        basicShader.unbind();
 
         square.render(basicShader);
     }
