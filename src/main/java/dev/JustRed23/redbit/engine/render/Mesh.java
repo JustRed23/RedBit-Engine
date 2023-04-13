@@ -39,6 +39,11 @@ public abstract class Mesh {
         for (int i = 0; i < getAttributeCount(); i++)
             glEnableVertexAttribArray(i);
 
+        if (this instanceof TexturedMesh textured) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, textured.getTextureID());
+        }
+
         glDrawElements(GL_TRIANGLES, verticesCount, GL_UNSIGNED_INT, 0);
 
         for (int i = 0; i < getAttributeCount(); i++)

@@ -39,21 +39,34 @@ public final class TextureUtils {
                 File file = new File(imagePath.getPath());
                 LOGGER.debug("Loading texture: " + file.getName());
 
-                ByteBuffer image = STBImage.stbi_load(file.getAbsolutePath(), width, height, channels, 4);
-                if (image == null)
+                ByteBuffer image = STBImage.stbi_load(file.getAbsolutePath(), width, height, channels, 0);
+                if (image == null || channels.get(0) < 3)
                     throw new RuntimeException("Failed to load image: " + path);
 
                 id = glGenTextures();
                 idMap.put(path, id);
                 glBindTexture(GL_TEXTURE_2D, id);
-                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(), height.get(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-                glGenerateMipmap(GL_TEXTURE_2D);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+                int format = channels.get(0) == 3 ? GL_RGB : GL_RGBA;
+                glTexImage2D(GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL_UNSIGNED_BYTE, image);
                 STBImage.stbi_image_free(image);
             }
 
             return id;
         }
+    }
+
+    public static void bindTexture(int id) {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    public static void unbindTexture() {
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     public static void cleanup() {
