@@ -1,7 +1,5 @@
 package dev.JustRed23.redbit.engine.render;
 
-import dev.JustRed23.redbit.mesh.Mesh;
-import dev.JustRed23.redbit.mesh.TexturedMesh;
 import dev.JustRed23.redbit.engine.utils.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;

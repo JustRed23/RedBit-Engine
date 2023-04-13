@@ -12,7 +12,6 @@ public final class BufUtils {
     public static @NotNull FloatBuffer create(@NotNull Matrix4f mat) {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
         mat.get(buffer);
-        buffer.flip();
         return buffer;
     }
 

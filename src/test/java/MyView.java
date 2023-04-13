@@ -1,21 +1,26 @@
+import dev.JustRed23.redbit.engine.err.UniformException;
+import dev.JustRed23.redbit.engine.render.Camera;
 import dev.JustRed23.redbit.engine.render.ColoredMesh;
 import dev.JustRed23.redbit.engine.render.Mesh;
 import dev.JustRed23.redbit.engine.render.ShaderProgram;
 import dev.JustRed23.redbit.engine.window.View;
 import dev.JustRed23.redbit.engine.window.Window;
+import org.joml.Vector2f;
 
-import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.*;
 
-public class MyView implements View {
+public class MyView extends View {
 
     private ShaderProgram basicShader;
 
     private Mesh square;
 
     public void setup(Window parent) throws Exception {
+        camera = new Camera(new Vector2f(), parent.getWidth(), parent.getHeight());
+
         basicShader = new ShaderProgram("shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
 
-        float mySquareSize = 0.5f;
+        float mySquareSize = 100;
         square = new ColoredMesh(new float[] {
                 mySquareSize, -mySquareSize, 0.0f, //bottom right
                 -mySquareSize, mySquareSize, 0.0f, //top left
@@ -33,11 +38,16 @@ public class MyView implements View {
     }
 
     public void update() {
-
+        //camera.position.x -= 0.5f;
     }
 
-    public void render() {
+    public void render() throws UniformException {
         glClearColor(0.3f, 0, 0, 1);
+
+        basicShader.bind();
+        basicShader.set("uProjectionMatrix", camera.getProjectionMatrix());
+        basicShader.set("uViewMatrix", camera.getViewMatrix());
+        basicShader.unbind();
 
         square.render(basicShader);
     }

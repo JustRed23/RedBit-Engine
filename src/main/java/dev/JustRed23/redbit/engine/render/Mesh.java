@@ -57,6 +57,10 @@ public abstract class Mesh {
         return vbos.size() - 1;
     }
 
+    public int getVerticesCount() {
+        return verticesCount;
+    }
+
     public final int getVaoId() {
         return vaoId;
     }

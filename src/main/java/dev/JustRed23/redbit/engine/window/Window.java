@@ -151,8 +151,14 @@ public class Window {
             return;
         }
 
-        if (currentView != null)
-            currentView.update();
+        if (currentView != null) {
+            try {
+                currentView.update();
+            } catch (Exception e) {
+                LOGGER.error("An error occurred while updating a view (" + currentView.getClass().getSimpleName() + ")", e);
+                setView(null);
+            }
+        }
 
         onUpdate.run();
     }
@@ -165,8 +171,14 @@ public class Window {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        if (currentView != null)
-            currentView.render();
+        if (currentView != null) {
+            try {
+                currentView.render();
+            } catch (Exception e) {
+                LOGGER.error("An error occurred while rendering a view (" + currentView.getClass().getSimpleName() + ")", e);
+                setView(null);
+            }
+        }
 
         onRender.run();
     }
