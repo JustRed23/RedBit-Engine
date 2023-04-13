@@ -22,7 +22,7 @@ public final class ShaderProgram extends ShaderUniformity {
         this.programId = glCreateProgram();
         if (programId == 0)
             throw new RuntimeException("Could not create Shader");
-        super.setProgramId(programId);
+        super.setProgram(this);
         createShader(vertexPath, fragmentPath);
     }
 

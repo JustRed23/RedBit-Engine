@@ -44,7 +44,6 @@ public class MyView extends View {
     public void render() throws UniformException {
         glClearColor(0.3f, 0, 0, 1);
 
-        basicShader.bind();
         basicShader.set("uProjectionMatrix", camera.getProjectionMatrix());
         basicShader.set("uViewMatrix", camera.getViewMatrix());
 

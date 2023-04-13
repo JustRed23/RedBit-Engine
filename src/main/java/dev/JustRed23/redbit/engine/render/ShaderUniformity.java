@@ -11,13 +11,16 @@ import static org.lwjgl.opengl.GL20.*;
 
 class ShaderUniformity {
 
+    private ShaderProgram shaderProgram;
     private int programId;
 
-    void setProgramId(int programId) {
-        this.programId = programId;
+    void setProgram(ShaderProgram instance) {
+        this.shaderProgram = instance;
+        this.programId = instance.getProgramId();
     }
 
     private int setupUniform(String name) throws UniformException {
+        shaderProgram.bind();
         int location = glGetUniformLocation(programId, name);
         if (location < 0)
             throw new UniformException("Could not find uniform variable '" + name + "'");
