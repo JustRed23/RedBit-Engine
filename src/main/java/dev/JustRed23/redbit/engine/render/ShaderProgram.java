@@ -16,6 +16,7 @@ public final class ShaderProgram extends ShaderUniformity {
     private Shader vertexShader, fragmentShader;
 
     private final int programId;
+    private boolean isBound;
 
     public ShaderProgram(String vertexPath, String fragmentPath) throws IOException {
         this.programId = glCreateProgram();
@@ -26,7 +27,11 @@ public final class ShaderProgram extends ShaderUniformity {
     }
 
     public void bind() {
+        if (isBound)
+            return;
+
         glUseProgram(programId);
+        isBound = true;
     }
 
     private void createShader(@NotNull String vertex, @NotNull String fragment) throws IOException {
@@ -54,6 +59,7 @@ public final class ShaderProgram extends ShaderUniformity {
 
     public void unbind() {
         glUseProgram(0);
+        isBound = false;
     }
 
     public void cleanup() {
