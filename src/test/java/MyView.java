@@ -1,4 +1,6 @@
+import components.TestComponent;
 import dev.JustRed23.redbit.engine.err.UniformException;
+import dev.JustRed23.redbit.engine.obj.GameObject;
 import dev.JustRed23.redbit.engine.render.*;
 import dev.JustRed23.redbit.engine.window.View;
 import dev.JustRed23.redbit.engine.window.Window;
@@ -16,10 +18,16 @@ public class MyView extends View {
 
     private int screenWidth, screenHeight;
 
+    private GameObject myGameObject;
+
     protected void setup(Window parent) throws Exception {
         screenWidth = parent.getWidth();
         screenHeight = parent.getHeight();
         camera = new Camera(new Vector2f(-(screenWidth / 2f), -(screenHeight / 2f)), screenWidth, screenHeight);
+
+        myGameObject = new GameObject("MyGameObject");
+        myGameObject.addComponent(new TestComponent());
+        addGameObject(myGameObject);
 
         basicShader = new ShaderProgram("shaders/default/vertex.glsl", "shaders/default/fragment.glsl");
         texturedShader = new ShaderProgram("shaders/textured/vertex.glsl", "shaders/textured/fragment.glsl");
