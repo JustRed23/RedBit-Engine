@@ -1,5 +1,7 @@
 package dev.JustRed23.redbit.engine.utils;
 
+import dev.JustRed23.redbit.engine.render.Texture;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
@@ -15,19 +17,18 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public final class TextureUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TextureUtils.class);
 
-    private static final Map<String, Integer> idMap = new HashMap<>();
+    private static final Map<String, Texture> texMap = new HashMap<>();
 
-    public static int load(String path) throws FileNotFoundException {
+    public static @NotNull Texture load(String path) throws FileNotFoundException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            int id = idMap.getOrDefault(path, -1);
+            Texture texture = texMap.getOrDefault(path, null);
 
-            if (id == -1) {
+            if (texture == null) {
                 IntBuffer width = stack.mallocInt(1);
                 IntBuffer height = stack.mallocInt(1);
                 IntBuffer channels = stack.mallocInt(1);
@@ -39,12 +40,12 @@ public final class TextureUtils {
                 File file = new File(imagePath.getPath());
                 LOGGER.debug("Loading texture: " + file.getName());
 
+                STBImage.stbi_set_flip_vertically_on_load(true);
                 ByteBuffer image = STBImage.stbi_load(file.getAbsolutePath(), width, height, channels, 0);
                 if (image == null || channels.get(0) < 3)
                     throw new RuntimeException("Failed to load image: " + path);
 
-                id = glGenTextures();
-                idMap.put(path, id);
+                int id = glGenTextures();
                 glBindTexture(GL_TEXTURE_2D, id);
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -55,9 +56,12 @@ public final class TextureUtils {
                 int format = channels.get(0) == 3 ? GL_RGB : GL_RGBA;
                 glTexImage2D(GL_TEXTURE_2D, 0, format, width.get(0), height.get(0), 0, format, GL_UNSIGNED_BYTE, image);
                 STBImage.stbi_image_free(image);
+
+                texture = new Texture(id, width.get(0), height.get(0), format);
+                texMap.put(path, texture);
             }
 
-            return id;
+            return texture;
         }
     }
 
@@ -70,6 +74,6 @@ public final class TextureUtils {
     }
 
     public static void cleanup() {
-        idMap.forEach((path, id) -> glDeleteTextures(id));
+        texMap.forEach((s, texture) -> glDeleteTextures(texture.id()));
     }
 }

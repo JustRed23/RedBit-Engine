@@ -39,6 +39,14 @@ class ShaderUniformity {
         glUniform1i(setupUniform(name), value ? 1 : 0);
     }
 
+    public void set(String name, int[] values) throws UniformException {
+        glUniform1iv(setupUniform(name), values);
+    }
+
+    public void set(String name, float[] values) throws UniformException {
+        glUniform1fv(setupUniform(name), values);
+    }
+
     public void set(String name, @NotNull Vector2f vec) throws UniformException {
         glUniform2f(setupUniform(name), vec.x, vec.y);
     }

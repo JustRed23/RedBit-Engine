@@ -2,7 +2,7 @@ package dev.JustRed23.redbit.engine.render;
 
 import dev.JustRed23.redbit.engine.err.UniformException;
 import dev.JustRed23.redbit.engine.obj.GameObject;
-import dev.JustRed23.redbit.engine.obj.components.MeshRenderer;
+import dev.JustRed23.redbit.engine.obj.components.SpriteRenderer;
 import dev.JustRed23.redbit.engine.window.View;
 
 import java.util.ArrayList;
@@ -14,20 +14,23 @@ public class Renderer {
     private final int MAX_BATCH_SIZE = 1000;
 
     public void add(View view, GameObject object) {
-        MeshRenderer renderer = object.getComponent(MeshRenderer.class);
+        SpriteRenderer renderer = object.getComponent(SpriteRenderer.class);
         if (renderer == null)
             return;
 
         add(view, renderer);
     }
 
-    private void add(View view, MeshRenderer renderer) {
+    private void add(View view, SpriteRenderer renderer) {
         boolean added = false;
         for (BatchRenderer batch : batches) {
             if (batch.hasRoom()) {
-                batch.addMesh(renderer);
-                added = true;
-                break;
+                Texture tex = renderer.getTexture();
+                if (tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
+                    batch.addSprite(renderer);
+                    added = true;
+                    break;
+                }
             }
         }
 
@@ -35,7 +38,7 @@ public class Renderer {
             BatchRenderer batch = new BatchRenderer(view, MAX_BATCH_SIZE, renderer.getShader());
             batch.start();
             batches.add(batch);
-            batch.addMesh(renderer);
+            batch.addSprite(renderer);
         }
     }
 

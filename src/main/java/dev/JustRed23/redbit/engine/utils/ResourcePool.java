@@ -1,6 +1,7 @@
 package dev.JustRed23.redbit.engine.utils;
 
 import dev.JustRed23.redbit.engine.render.ShaderProgram;
+import dev.JustRed23.redbit.engine.render.Texture;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ public final class ResourcePool {
         return shader;
     }
 
-    public static int getTexture(String texturePath) throws FileNotFoundException {
+    public static Texture getTexture(String texturePath) throws FileNotFoundException {
         return TextureUtils.load(texturePath);
     }
 }
