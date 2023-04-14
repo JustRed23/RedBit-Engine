@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -18,7 +18,7 @@ public final class ShaderProgram extends ShaderUniformity {
     private final int programId;
     private boolean isBound;
 
-    public ShaderProgram(String vertexPath, String fragmentPath) throws IOException {
+    public ShaderProgram(String vertexPath, String fragmentPath) throws FileNotFoundException {
         this.programId = glCreateProgram();
         if (programId == 0)
             throw new RuntimeException("Could not create Shader");
@@ -34,12 +34,15 @@ public final class ShaderProgram extends ShaderUniformity {
         isBound = true;
     }
 
-    private void createShader(@NotNull String vertex, @NotNull String fragment) throws IOException {
+    private void createShader(@NotNull String vertex, @NotNull String fragment) throws FileNotFoundException {
         if (vertex.isBlank() || fragment.isBlank())
             throw new RuntimeException("Shader locations not set");
 
         String vertexShaderSource = FileUtils.readFile(vertex);
         String fragmentShaderSource = FileUtils.readFile(fragment);
+
+        if (vertexShaderSource == null || fragmentShaderSource == null)
+            throw new FileNotFoundException("Shader source not found, missing shader: " + (vertexShaderSource == null ? vertex : fragment));
 
         Shader vertexShader = new Shader(vertexShaderSource, GL_VERTEX_SHADER);
         Shader fragmentShader = new Shader(fragmentShaderSource, GL_FRAGMENT_SHADER);

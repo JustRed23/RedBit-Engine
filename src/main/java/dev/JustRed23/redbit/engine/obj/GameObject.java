@@ -11,9 +11,17 @@ public class GameObject {
     private final String name;
     private final List<Component> components;
 
+    public Transform transform;
+
     public GameObject(String name) {
         this.name = name;
         this.components = new ArrayList<>();
+        this.transform = new Transform();
+    }
+
+    public GameObject(String name, Transform transform) {
+        this(name);
+        this.transform = transform;
     }
 
     public GameObject copy(String copyName) {

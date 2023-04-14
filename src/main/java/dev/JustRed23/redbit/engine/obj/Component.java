@@ -2,7 +2,7 @@ package dev.JustRed23.redbit.engine.obj;
 
 public abstract class Component {
 
-    protected GameObject parent;
+    public GameObject parent;
 
     public final Component copy(GameObject newParent) {
         Component copy = onCopy();
