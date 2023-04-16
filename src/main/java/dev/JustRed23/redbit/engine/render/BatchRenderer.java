@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-public class BatchRenderer {
+public class BatchRenderer implements Comparable<BatchRenderer> {
 
     /* COMMON */
     private final int POSITION_SIZE = 2;
@@ -36,6 +36,7 @@ public class BatchRenderer {
     private final ShaderProgram shader;
     private final View view;
     private final int maxSprites;
+    private final int zIndex;
 
     private SpriteRenderer[] renderers;
     private int totalSprites;
@@ -44,8 +45,9 @@ public class BatchRenderer {
 
     private int vaoId, vboId;
 
-    public BatchRenderer(View view, int maxSize, ShaderProgram shader) {
+    public BatchRenderer(View view, int maxSize, int zIndex, ShaderProgram shader) {
         this.maxSprites = maxSize;
+        this.zIndex = zIndex;
         this.shader = shader;
         this.view = view;
         this.renderers = new SpriteRenderer[maxSize];
@@ -96,8 +98,20 @@ public class BatchRenderer {
     }
 
     public void render() throws UniformException {
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebuild = false;
+        for (int i = 0; i < totalSprites; i++) {
+            SpriteRenderer renderer = renderers[i];
+            if (renderer.isDirty()) {
+                loadVertexData(i);
+                renderer.clean();
+                rebuild = true;
+            }
+        }
+
+        if (rebuild) {
+            glBindBuffer(GL_ARRAY_BUFFER, vboId);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
 
         shader.bind();
         shader.set("uProjectionMatrix", view.getCamera().getProjectionMatrix());
@@ -228,5 +242,13 @@ public class BatchRenderer {
 
     public boolean hasTexture(Texture texture) {
         return textures.contains(texture);
+    }
+
+    public int zIndex() {
+        return zIndex;
+    }
+
+    public int compareTo(@NotNull BatchRenderer o) {
+        return Integer.compare(zIndex, o.zIndex);
     }
 }

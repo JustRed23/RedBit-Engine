@@ -59,9 +59,10 @@ public abstract class View {
     void _cleanup() {
         if (!initialized)
             return;
-        cleanup();
-        renderer.cleanup();
         initialized = false;
+        cleanup();
+        gameObjects.clear();
+        renderer.cleanup();
     }
 
     public final void addGameObject(GameObject gameObject) throws FileNotFoundException {

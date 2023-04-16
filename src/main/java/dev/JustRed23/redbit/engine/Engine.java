@@ -1,6 +1,7 @@
 package dev.JustRed23.redbit.engine;
 
 import dev.JustRed23.redbit.engine.err.WindowInitException;
+import dev.JustRed23.redbit.engine.utils.ResourcePool;
 import dev.JustRed23.stonebrick.app.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +26,18 @@ public class Engine extends Application {
         Application.runLater(() -> {
             try {
                 new MainLoops(144, 60);
+                loadInternalResources();
             } catch (WindowInitException e) {
                 LOGGER.error("Failed to initialize window", e);
+            } catch (Exception e) {
+                LOGGER.error("Failed to load internal resources", e);
+                throw new RuntimeException(e);
             }
         });
+    }
+
+    private void loadInternalResources() throws Exception {
+        ResourcePool.getShader("shaders/default");
     }
 
     protected void stop() throws Exception {

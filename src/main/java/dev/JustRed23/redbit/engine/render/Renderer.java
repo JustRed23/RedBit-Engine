@@ -6,6 +6,7 @@ import dev.JustRed23.redbit.engine.obj.components.SpriteRenderer;
 import dev.JustRed23.redbit.engine.window.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Renderer {
@@ -24,7 +25,7 @@ public class Renderer {
     private void add(View view, SpriteRenderer renderer) {
         boolean added = false;
         for (BatchRenderer batch : batches) {
-            if (batch.hasRoom()) {
+            if (batch.hasRoom() && batch.zIndex() == renderer.parent.zIndex()) {
                 Texture tex = renderer.getTexture();
                 if (tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
                     batch.addSprite(renderer);
@@ -35,10 +36,11 @@ public class Renderer {
         }
 
         if (!added) {
-            BatchRenderer batch = new BatchRenderer(view, MAX_BATCH_SIZE, renderer.getShader());
+            BatchRenderer batch = new BatchRenderer(view, MAX_BATCH_SIZE, renderer.parent.zIndex(), renderer.getShader());
             batch.start();
             batches.add(batch);
             batch.addSprite(renderer);
+            Collections.sort(batches);
         }
     }
 

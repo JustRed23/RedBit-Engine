@@ -13,15 +13,19 @@ public class GameObject {
 
     public Transform transform;
 
+    private int zIndex;
+
     public GameObject(String name) {
         this.name = name;
         this.components = new ArrayList<>();
         this.transform = new Transform();
+        this.zIndex = 0;
     }
 
-    public GameObject(String name, Transform transform) {
+    public GameObject(String name, Transform transform, int zIndex) {
         this(name);
         this.transform = transform;
+        this.zIndex = zIndex;
     }
 
     public GameObject copy(String copyName) {
@@ -74,5 +78,9 @@ public class GameObject {
 
     public final String getName() {
         return name;
+    }
+
+    public final int zIndex() {
+        return zIndex;
     }
 }

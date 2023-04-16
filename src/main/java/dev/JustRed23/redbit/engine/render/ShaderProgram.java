@@ -1,6 +1,7 @@
 package dev.JustRed23.redbit.engine.render;
 
 import dev.JustRed23.redbit.engine.utils.FileUtils;
+import dev.JustRed23.redbit.engine.utils.ResourcePool;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,14 @@ public final class ShaderProgram extends ShaderUniformity {
 
     private final int programId;
     private boolean isBound;
+
+    public static ShaderProgram getDefault() {
+        try {
+            return ResourcePool.getShader("shaders/default");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Unable to find default shader", e);
+        }
+    }
 
     public ShaderProgram(String vertexPath, String fragmentPath) throws FileNotFoundException {
         this.programId = glCreateProgram();
